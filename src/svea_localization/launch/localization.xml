@@ -22,6 +22,12 @@
     <!-- Lidar -->
     <arg name="lidar_ip" default="192.168.0.10"/>
     <arg name="use_lidar" default="true"/>
+    <arg name="use_mocap" default="false"/>
+    <arg name="mocap_rigid_body_name" default="$(var name)"/>
+    <arg name="mocap_input_topic" default="/rigid_bodies"/>
+    <arg name="mocap_output_topic" default="/$(var name)/odometry/mocap"/>
+    <arg name="mocap_frame" default="$(var map_frame)"/>
+    <arg name="mocap_publish_tf" default="false"/>
 
     <!-- Arguments END -->
 
@@ -44,6 +50,16 @@
         </group>
         <group unless="$(var is_sim)">
             <let name="use_sim_time" value="false"/>
+
+            <include if="$(var use_mocap)" file="$(find-pkg-share svea_localization)/launch/mocap.xml">
+                <arg name="name"            value="$(var name)"/>
+                <arg name="rigid_body_name" value="$(var mocap_rigid_body_name)"/>
+                <arg name="input_topic"     value="$(var mocap_input_topic)"/>
+                <arg name="output_topic"    value="$(var mocap_output_topic)"/>
+                <arg name="frame_id"        value="$(var mocap_frame)"/>
+                <arg name="child_frame_id"  value="$(var base_frame)"/>
+                <arg name="publish_tf"      value="$(var mocap_publish_tf)"/>
+            </include>
 
             <!-- Robot localization (Local EKF)-->
             <node pkg="robot_localization" exec="ekf_node" name="ekf_local" output="screen">

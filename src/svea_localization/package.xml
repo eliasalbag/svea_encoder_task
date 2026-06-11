@@ -8,6 +8,7 @@
   <license>TODO: License declaration</license>
 
   <depend>geometry_msgs</depend>
+  <depend>mocap4r2_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>rclpy</depend>
   <depend>rclcpp</depend>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="name"            default="svea3"/>
+    <arg name="rigid_body_name" default="$(var name)"/>
+    <arg name="input_topic"     default="/rigid_bodies"/>
+    <arg name="output_topic"    default="/$(var name)/odometry/mocap"/>
+    <arg name="frame_id"        default="map"/>
+    <arg name="child_frame_id"  default="$(var name)/base_link"/>
+    <arg name="two_d_mode"      default="true"/>
+    <arg name="publish_tf"      default="false"/>
+
+    <node pkg="svea_localization" exec="mocap_to_odom.py" name="mocap_to_odom" output="screen">
+        <param name="input_topic"     value="$(var input_topic)"/>
+        <param name="rigid_body_name" value="$(var rigid_body_name)"/>
+        <param name="output_topic"    value="$(var output_topic)"/>
+        <param name="frame_id"        value="$(var frame_id)"/>
+        <param name="child_frame_id"  value="$(var child_frame_id)"/>
+        <param name="two_d_mode"      value="$(var two_d_mode)"/>
+        <param name="publish_tf"      value="$(var publish_tf)"/>
+    </node>
+</launch>

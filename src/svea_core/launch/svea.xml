@@ -25,6 +25,8 @@
     <arg name="qgc_host"          default="host.docker.internal"/>
 
     <arg name="use_lidar"         default="true"/>
+    <arg name="use_mocap"         default="false"/>
+    <arg name="mocap_rigid_body_name" default="$(var name)"/>
 
     <!-- Arguments END -->
 
@@ -37,6 +39,8 @@
         <arg name="initial_pose_y" value="$(var initial_pose_y)" />
         <arg name="initial_pose_a" value="$(var initial_pose_a)" />
 	<arg name="use_lidar"      value="$(var use_lidar)" />
+        <arg name="use_mocap"      value="$(var use_mocap)" />
+        <arg name="mocap_rigid_body_name" value="$(var mocap_rigid_body_name)" />
     </include>
     
     <!-- If-Else Group -->
