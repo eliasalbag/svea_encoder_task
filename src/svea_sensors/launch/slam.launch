@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+    Launch localization and slam toolbox
+    To save the map:  
+        rosrun map_server map_saver -f <path_to_output_file (without extension)>
+    example:
+        rosrun map_server map_saver -f ~/my_maps/test_map
+-->
+
+<launch>
+
+    <!-- Launch file arguments -->
+    <arg name="slam_delay"  default="5"/>
+    <arg name="is_indoors" default="true" />
+    <arg name="start_serial" default="true" />
+
+    <include file="$(find svea_sensors)/launch/localize.launch">
+	    <arg name="is_sim" value="false" />
+    	<arg name="is_indoors" value="$(arg is_indoors)" />	
+	    <arg name="start_serial" value="$(arg start_serial)"/>
+     </include>
+
+    <!-- Start SLAM -->
+    <node pkg="slam_toolbox" type="sync_slam_toolbox_node" name="slam_toolbox" output="screen" launch-prefix="bash -c 'sleep $(arg slam_delay); $0 $@' ">
+        <rosparam command="load" file="$(find svea_sensors)/params/slam_toolbox/slam_sync.yaml" />
+    </node>
+
+</launch>
