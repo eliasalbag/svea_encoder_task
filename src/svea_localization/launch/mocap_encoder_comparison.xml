@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="name"                  default="svea3"/>
+    <arg name="rigid_body_name"       default="$(var name)"/>
+    <arg name="mocap_input_topic"     default="/rigid_bodies"/>
+    <arg name="mocap_odom_topic"      default="/$(var name)/odometry/mocap"/>
+    <arg name="encoder_twist_topic"   default="/encoder/twist"/>
+    <arg name="encoder_odom_topic"    default="/$(var name)/odometry/encoder"/>
+    <arg name="map_frame"             default="map"/>
+    <arg name="encoder_odom_frame"    default="$(var name)/odom_encoder"/>
+    <arg name="base_frame"            default="$(var name)/base_link"/>
+    <arg name="encoder_twist_frame"   default="$(var base_frame)"/>
+    <arg name="distance_topic"        default="/mavros/wheel_odometry/distance"/>
+    <arg name="rc_topic"              default="/mavros/rc/in"/>
+    <arg name="wheel_track"           default="0.2"/>
+
+    <include file="$(find-pkg-share svea_localization)/launch/mocap.xml">
+        <arg name="name"            value="$(var name)"/>
+        <arg name="rigid_body_name" value="$(var rigid_body_name)"/>
+        <arg name="input_topic"     value="$(var mocap_input_topic)"/>
+        <arg name="output_topic"    value="$(var mocap_odom_topic)"/>
+        <arg name="frame_id"        value="$(var map_frame)"/>
+        <arg name="child_frame_id"  value="$(var base_frame)"/>
+        <arg name="two_d_mode"      value="true"/>
+        <arg name="publish_tf"      value="false"/>
+    </include>
+
+    <node pkg="svea_core" exec="encoder_conversion.py" name="mavros_encoder_to_twist" output="screen">
+        <param name="wheel_track"    value="$(var wheel_track)"/>
+        <param name="frame_id"       value="$(var encoder_twist_frame)"/>
+        <param name="distance_topic" value="$(var distance_topic)"/>
+        <param name="rc_topic"       value="$(var rc_topic)"/>
+        <param name="output_topic"   value="$(var encoder_twist_topic)"/>
+    </node>
+
+    <node pkg="robot_localization" exec="ekf_node" name="ekf_encoder_compare" output="screen">
+        <param from="$(find-pkg-share svea_localization)/params/robot_localization/encoder_ekf.yaml"/>
+        <param name="map_frame"       value="$(var map_frame)"/>
+        <param name="odom_frame"      value="$(var encoder_odom_frame)"/>
+        <param name="base_link_frame" value="$(var base_frame)"/>
+        <param name="world_frame"     value="$(var encoder_odom_frame)"/>
+        <param name="twist0"          value="$(var encoder_twist_topic)"/>
+        <remap from="/odometry/filtered" to="$(var encoder_odom_topic)"/>
+    </node>
+</launch>
